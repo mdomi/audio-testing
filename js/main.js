@@ -7,9 +7,20 @@ require.config({
 	}
 });
 require([
-	'jQuery', 'Underscore', 'Backbone', 'Handlebars'
-], function($, _, Backbone, Handlebars) {
-	console.log($, _, Backbone, Handlebars);
+	'jQuery', 'app'
+], function($, app) {
+
+    $(function () {
+        var model = new app.models.AudioModel({
+            filename: 'audio/test.ogg'
+        });
+        
+        var view = new app.views.AudioView({
+            model: model,
+            el : $('#app')
+        }).render();
+        
+    });
 });
 
 
