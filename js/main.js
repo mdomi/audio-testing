@@ -4,13 +4,15 @@ require.config({
 		Handlebars: 'loaders/handlebars',
 		Underscore: 'loaders/underscore',
 		Backbone: 'loaders/backbone',
+        Bootstrap: 'loaders/bootstrap',
 	}
 });
 require([
 	'jQuery', 'app'
-], function($, app) {
+], function($, app, Bootstrap) {
 
     $(function () {
+    
         var model = new app.models.AudioModel({
             filename: 'audio/test.ogg'
         });

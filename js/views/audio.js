@@ -17,22 +17,32 @@ define([
             'click .pause': 'pause',
             'click .stop': 'stop',
             'click .volume.louder': 'volumeUp',
-            'click .volume.softer': 'volumeDown',
-            'timeupdate audio': 'updateTime'
+            'click .volume.softer': 'volumeDown'
         },
         render : function () {
             var view = this;
             view.$el.html(view.template(view.model.toJSON()));
-            view.$audioElement = view.$el.find('audio').on('timeupdate', function () {
-                view.updateTime();
+            view.$audioElement = view.$el.find('audio').on('loadeddata timeupdate volumechange', function () {
+                view.updateDisplay();
+            }).on('loadeddata', function() {
+                view.$el.find('.play, .volume').removeAttr('disabled');
+            }).on('play', function () {
+                view.$el.find('.play').attr('disabled', true);
+                view.$el.find('.stop, .pause').removeAttr('disabled');
+            }).on('pause', function () {
+                view.$el.find('.play').removeAttr('disabled');
+                view.$el.find('.pause, .stop').attr('disabled', true);
             });
             view.audioElement = view.$audioElement[0];
-            return this.updateTime();
+            return this;
         },
-        updateTime: function () {
+        updateDisplay: function () {
             this.$el.find('.time').html(
                 formatTime(this.audioElement.currentTime) + ' / '
                 + formatTime(this.audioElement.duration));
+            this.$el.find('.volumelevel').html(
+                _.str.sprintf('Volume %u%%', this.audioElement.volume * 100)
+            );
             return this;
         },
         play : function (event) {
@@ -44,7 +54,7 @@ define([
         stop : function (event) {
             this.audioElement.pause();
             this.audioElement.currentTime = 0;
-            this.updateTime();
+            this.updateDisplay();
         },
         volumeUp : function (event) {
             this.alterVolume(stepSize);
